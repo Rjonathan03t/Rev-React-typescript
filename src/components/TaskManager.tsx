@@ -5,6 +5,44 @@ interface Task{
   id: string,
   title: string
 }
+
+export const useTaskManager=()=>{
+  const [tasks, setTasks] = useState<Task[]>([]);
+ const [searchKeyword, setSearchKeyword] = useState<string>("");
+ const [title, setTitle] = useState<string>("");
+
+ const addTask = (title: string): void => {
+    if (title.length < 1) {
+      return;
+    }
+
+    const newTask: Task = {
+      id: nanoid(),
+      title,
+    };
+    setTasks((prev) => prev.concat(newTask));
+    setTitle("");
+ };
+
+ const completeTask = (id: string): void => {
+    setTasks(tasks.filter((task: Task) => task.id !== id));
+ };
+
+ const updateTask = (id: string, taskUpdate: Partial<Task>): void => {
+    const newTasks = tasks.map((task: Task) => task.id === id ? { ...task, ...taskUpdate } : task);
+    setTasks(newTasks);
+ };
+
+ const filteredTasks = tasks.filter((task: Task) =>
+    task.title.toLowerCase().includes(searchKeyword.toLowerCase()),
+ );
+
+ const handleSearch = (ev: React.ChangeEvent<HTMLInputElement>): void => {
+    setSearchKeyword(ev.target.value);
+ };
+
+ return { title, addTask, completeTask, updateTask, filteredTasks, handleSearch, setTitle };
+}
 // TODO: create custom hook to manage task state
 export const TaskManager = () => {
   const [title, setTitle] = useState<string>("");
